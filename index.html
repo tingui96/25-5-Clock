@@ -74,11 +74,11 @@
             }
             setPause()
             {
-                this.pause = true;
+                this.pause = !this.pause;
             }
             setPlay()
             {
-                this.pause = false;
+                this.pause = !this.pause;
             }
             setReset()
             {
@@ -88,15 +88,19 @@
                 this.start = true;
                 this.clear = setInterval(() => {    
                     if(!this.pause){
-                        this.tiempo--;
+                        this.tiempo--;                        
+                        if(this.tiempo < 0)
+                        {
+                            this.tiempo = (!this.bool) ? this.breaker: this.timmer;
+                            document.getElementById('timer-label').innerHTML = (!this.bool) ? "Break" : "Session"
+                            this.bool = !this.bool;
+                        }
+                        document.getElementById('time-left').innerHTML = formatTime(this.tiempo);
                         if(this.tiempo === 0)
                         {
                             var audioQ = document.getElementById("beep");
                             audioQ.play();
-                            this.tiempo = (!this.bool) ? this.breaker: this.timmer;
-                            this.bool = !this.bool;
                         }
-                        document.getElementById('time-left').innerHTML = formatTime(this.tiempo);
                     }                
                     
                 },1000);
@@ -109,7 +113,7 @@
         {
             var min = Math.floor(time / 60);
             var seg = Math.floor(time % 60);
-            return min < 10 ? seg < 10 ? `0${min}:0${seg}` : `0${min}:${seg}` : seg < 10 ? `${min}:0${seg}` : `${min}:${seg}`;
+            return (min < 10 ? seg < 10 ? `0${min}:0${seg}` : `0${min}:${seg}` : seg < 10 ? `${min}:0${seg}` : `${min}:${seg}`);
         }
         function MinusBreak(e)
         {
@@ -168,8 +172,10 @@
             breaker1.innerText = 25;
             var timmer = document.getElementById("time-left");
             timmer.innerText = formatTime(breaker1.innerText*60);
-            temporizador.setReset();
+            if(temporizador)temporizador.setReset();
             temporizador = null;
+            var audioQ = document.getElementById("beep");
+            audioQ.pause();
         }
     </script>
    </body>
