@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./app.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono|Righteous" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">      
+    </head>
+  <body>
+    <div id="container">
+        <div id="app">
+            <div>
+                <div class="main-title">25 + 5 Clock</div>
+                <div class="length-control">
+                    <div id="break-label">Break Length</div>
+                    <button class="btn-level" id="break-decrement" value="-" onclick="MinusBreak()">
+                        <i class="fa fa-arrow-down fa-2x"></i>
+                    </button>
+                    <div class="btn-level" id="break-length">5</div>
+                    <button class="btn-level" id="break-increment" value="+" onclick="PlusBreak()">
+                        <i class="fa fa-arrow-up fa-2x"></i>
+                    </button>
+                </div>
+                <div class="length-control">
+                    <div id="session-label">Session Length</div>
+                    <button class="btn-level" id="session-decrement" value="-" onclick="MinusSession()">
+                        <i class="fa fa-arrow-down fa-2x"></i>
+                    </button>
+                    <div class="btn-level" id="session-length">25</div>
+                    <button class="btn-level" id="session-increment" value="+" onclick="PlusSession()">
+                        <i class="fa fa-arrow-up fa-2x"></i>
+                    </button>
+                </div>
+                <div class="timer">
+                    <div class="timer-wrapper">
+                        <div id="timer-label">Session</div>
+                        <div id="time-left">25:00</div>
+                    </div>
+                </div>
+                <div class="timer-control">
+                    <button id="start_stop">
+                        <i class="fa fa-play fa-2x" onclick="OnClickPlay()"></i>
+                        <i class="fa fa-pause fa-2x" onclick="OnClickPause()"></i>
+                    </button>
+                    <button id="reset" onclick="OnClickReset()">
+                        <i class="fa fa-refresh fa-2x"></i>
+                    </button>
+                </div>
+                <audio id="beep" preload="auto" src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"></audio>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    <script>
+        class Temporizador {
+            constructor(timer,breaker) {
+                this.tiempo = timer;
+                this.breaker = breaker;
+                this.timmer = timer;
+                this.bool = false;
+                this.pause = false;
+                this.start = false;
+                this.reset = false;
+                this.clear = 0;
+
+            }
+
+            getTime() {
+                return this.tiempo;
+            }
+            getStart()
+            {
+                return this.start;
+            }
+            setPause()
+            {
+                this.pause = true;
+            }
+            setPlay()
+            {
+                this.pause = false;
+            }
+            setReset()
+            {
+                clearInterval(this.clear);
+            }
+            init() {
+                this.start = true;
+                this.clear = setInterval(() => {    
+                    if(!this.pause){
+                        this.tiempo--;
+                        if(this.tiempo === 0)
+                        {
+                            var audioQ = document.getElementById("beep");
+                            audioQ.play();
+                            this.tiempo = (!this.bool) ? this.breaker: this.timmer;
+                            this.bool = !this.bool;
+                        }
+                        document.getElementById('time-left').innerHTML = formatTime(this.tiempo);
+                    }                
+                    
+                },1000);
+            }
+        }
+        var breaker = document.getElementById("session-length");
+        var timmer = document.getElementById("time-left");
+        let temporizador;
+        function formatTime(time)
+        {
+            var min = Math.floor(time / 60);
+            var seg = Math.floor(time % 60);
+            return min < 10 ? seg < 10 ? `0${min}:0${seg}` : `0${min}:${seg}` : seg < 10 ? `${min}:0${seg}` : `${min}:${seg}`;
+        }
+        function MinusBreak(e)
+        {
+           var breaker = document.getElementById("break-length");
+           if(!temporizador) breaker.innerText = (breaker.innerText > 1) ? breaker.innerText - 1: 1;
+        }
+        function PlusBreak(e)
+        {
+           var breaker = document.getElementById("break-length");
+           if(!temporizador) breaker.innerText = (breaker.innerText < 60) ? parseInt(breaker.innerText) + 1 : 60;
+        }
+        function MinusSession(e)
+        {
+            if(!temporizador)
+            {
+                var breaker = document.getElementById("session-length");
+                breaker.innerText = (breaker.innerText > 1) ? breaker.innerText - 1: 1;
+                var timmer = document.getElementById("time-left");
+                timmer.innerText = formatTime(breaker.innerText*60);
+            }  
+        }
+        function PlusSession(e)
+        {
+            if(!temporizador)
+            {
+                var breaker = document.getElementById("session-length");
+                breaker.innerText = (breaker.innerText < 60) ? parseInt(breaker.innerText) + 1 : 60;
+                var timmer = document.getElementById("time-left");
+                timmer.innerText = formatTime(breaker.innerText*60);
+            }
+        }
+        function OnClickPlay(e)
+        {
+            if(temporizador)
+            {
+                temporizador.setPlay();
+            }
+            else
+            {
+                var timmer = document.getElementById("session-length");
+                var breaker = document.getElementById("break-length");
+                temporizador = new Temporizador(timmer.innerText*60,breaker.innerText*60);
+                temporizador.init();
+            }
+            
+        }
+        function OnClickPause(e)
+        {  
+            temporizador.setPause();
+        }
+        function OnClickReset(e)
+        {
+            var breaker = document.getElementById("break-length");
+            breaker.innerText = 5;
+            var breaker1 = document.getElementById("session-length");
+            breaker1.innerText = 25;
+            var timmer = document.getElementById("time-left");
+            timmer.innerText = formatTime(breaker1.innerText*60);
+            temporizador.setReset();
+            temporizador = null;
+        }
+    </script>
+   </body>
+</html>
