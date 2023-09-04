@@ -367,12 +367,7 @@
                     onClick: this.reset
                 }, React.createElement("i", {
                     className: "fa fa-refresh fa-2x"
-                }))), React.createElement("div", {
-                    className: "author"
-                }, " ", "Designed and Coded by ", React.createElement("br", null), React.createElement("a", {
-                    href: "https://goo.gl/6NNLMG",
-                    target: "_blank"
-                }, "Peter Weinberg")), React.createElement("audio", {
+                }))), React.createElement("audio", {
                     id: "beep",
                     preload: "auto",
                     ref: function(t) {
